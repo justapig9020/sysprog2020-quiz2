@@ -19,27 +19,23 @@ void get_hexchar(char buf[], size_t len) {
 }
 
 uint32_t hexchar2val(uint64_t in) {
-    printf("Begin:\t%llx\n\n", in);
     const uint64_t letter = in & (0x40 * MASK);
     const uint64_t shift = (letter >> 3) | (letter >> 6);
 
     in = (in + shift) & (0xf * MASK);
-    uint64_t sh_msk = 0xf * MASK;
-    for (size_t i = 1; i < 9; i++) {
-        printf("Val:\t%016llx\n", in);
-        printf("Mask:\t%016llx\n\n", sh_msk);
+    uint64_t sh_msk = 0xf * (MASK - 1);
+    for (size_t i = 0; i < 7; i++) {
         uint64_t shift = in & sh_msk;
         in &= ~sh_msk;
-        shift <<= 4;
+        shift >>= 4;
         in |= shift;
-        sh_msk >>= 4;
+        sh_msk <<= 4;
     }
-    printf("\n");
-    return in >> 32 & 0xffffffff;
+    return in & 0xffffffff;
 }
 
 int main(void) {
-    char buf[8] = "\xff\xff\xff\xff\xff\xff\xff\xff";
+    char buf[8];
     const size_t len = ARR_SZ(buf);
 
     get_hexchar(buf, len);
