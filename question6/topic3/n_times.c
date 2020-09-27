@@ -4,9 +4,16 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define REP 11
-#define JUNK 5
+#define REP 3
+#define JUNK 2
 #define ARR_SZ(arr) (sizeof(arr)/sizeof(arr[0]))
+
+void show(int arr[], int sz) {
+    printf("Input data: ");
+    for(int i=0; i<sz; i++)
+        printf("%d ,", arr[i]);
+    puts("");
+}
 
 bool is_pow2(int n) {
     return n>2 && !(n & (n-1));
@@ -18,7 +25,7 @@ int buf_len(int n) {
 
 int single_num(int nums[], int sz, int times) {
     int len = buf_len(times);
-    printf("Buf len: %d\n", len);
+    printf("Buf len: %d\n\n", len);
     int *state = malloc(sizeof(int) * len);
     int *mask = malloc(sizeof(int) * len);
 
@@ -26,10 +33,12 @@ int single_num(int nums[], int sz, int times) {
         state[i] = 0;
 
     times--;
+    printf("Mask\n");
     for (int i=0; i<len; i++) {
         mask[i] = !!(times & (1 << i)) * -1;
-        printf("%x\n", mask[i]);
+        printf("bit %d, %x\n", i, mask[i]);
     }
+    puts("");
 
     for (int i=0; i<sz; i++) {
         int carry = nums[i];
@@ -40,9 +49,11 @@ int single_num(int nums[], int sz, int times) {
             state[j] ^= carry;
             carry = c_buf;
         }
+
         for (int j=0; j<len; j++)
             printf("ST%d %x\n", j, state[j]);
         printf("CHK %x\n\n", chk);
+
         chk = ~chk;
         for (int j=0; j<len; j++) {
             state[j] &= chk;
@@ -60,8 +71,8 @@ int main(void) {
     for (i=0; i<ARR_SZ(arr)-1; i++)
         arr[i] = i/REP + 1;
     arr[i] = JUNK+1;
-    for (i=0; i<ARR_SZ(arr)-1; i++)
-        printf("%d\n", arr[i]);
+
+    show(arr, ARR_SZ(arr));
 
     int rst = single_num(arr, ARR_SZ(arr), REP);
     if (JUNK+1 == rst)
