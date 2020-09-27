@@ -4,36 +4,41 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define REP 3
+#define REP 11
 #define JUNK 5
 #define ARR_SZ(arr) (sizeof(arr)/sizeof(arr[0]))
 
+bool is_pow2(int n) {
+    return n>2 && !(n & (n-1));
+}
+
 int buf_len(int n) {
-    return (int)log2((double)n) + 1;
+    return (int)log2((double)n) + !is_pow2(n);
 }
 
 int single_num(int nums[], int sz, int times) {
     int len = buf_len(times);
-    printf("len: %d\n", len);
+    printf("Buf len: %d\n", len);
     int *state = malloc(sizeof(int) * len);
     int *mask = malloc(sizeof(int) * len);
 
     for (int i=0; i<len; i++)
         state[i] = 0;
 
+    times--;
     for (int i=0; i<len; i++) {
         mask[i] = !!(times & (1 << i)) * -1;
         printf("%x\n", mask[i]);
     }
 
     for (int i=0; i<sz; i++) {
-        int chk = -1;
         int carry = nums[i];
+        int chk = carry;
         for (int j=0; j<len; j++) {
+            chk &= ~(state[j]^mask[j]);
             int c_buf = carry & state[j];
             state[j] ^= carry;
             carry = c_buf;
-            chk &= ~(state[j]^mask[j]);
         }
         for (int j=0; j<len; j++)
             printf("ST%d %x\n", j, state[j]);
